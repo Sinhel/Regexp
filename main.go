@@ -1,13 +1,14 @@
 package main
 
 import (
+	"fmt"
+	"io/fs"
 	"log"
 	"os"
+	"path/filepath"
 	"regexp"
-	/* 	"fmt"
-		"io/fs"
-	   	"strings"
-	   	"path/filepath" */)
+	"strings"
+)
 
 func main() {
 	//Set default value for input files as input.txt, regex.txt in same the folder as the program. Files can also be specified as arguments in cli
@@ -27,27 +28,40 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	regexonfile(string(txtinput), string(reinput))
+	runRegex(string(txtinput), string(reinput))
+	recursivepathsearch(".", "*")
 }
 
-func regexonfile(txtinput string, reinput string) (result []map[string]string, subexpNames []string) {
-	re := regexp.MustCompile(string(reinput))
-	result = make([]map[string]string, 0)
-	for _, match := range re.FindAllStringSubmatch((string(txtinput)), -1) {
-		res := make(map[string]string)
-		for i, name := range re.SubexpNames() {
-			if i != 0 && name != "" {
-				res[name] = match[i]
+func runRegex(txtinput string, reinput string) (totres []map[string]string) {
+	re := regexp.MustCompile(reinput)
+	for _, match := range re.FindAllStringSubmatch(txtinput, -1) {
+		res := map[string]string{}
+		totres = append(totres, res)
+		for i, subexpName := range re.SubexpNames() {
+			if subexpName != "" {
+				res[subexpName] = match[i]
 			}
 		}
-		result = append(result, res)
-		subexpNames = re.SubexpNames()
+	}
+	keys := re.SubexpNames()
+	for _, k := range keys {
+		if k != "" {
+			fmt.Printf("%s,", k)
+		}
+	}
+	fmt.Printf("\n")
+	for _, m := range totres {
+		for _, k := range keys {
+			if k != "" {
+				fmt.Printf("%s,", m[k])
+			}
+		}
+		fmt.Printf("\n")
 	}
 	return
 }
 
-/* func printSubexpNames(subexpNames []map[string]string) {
+func printSubexpNames(subexpNames []string) {
 	for i, name := range subexpNames {
 		if i != 0 && name != "" {
 			fmt.Printf("%v,",
@@ -55,29 +69,30 @@ func regexonfile(txtinput string, reinput string) (result []map[string]string, s
 		}
 	}
 	fmt.Print("\n")
-	for i, match := range subexpNames {
-		for i, name := range subexpNames {
-			if i != 0 && name != "" {
+	for i := range subexpNames {
+		for _, name := range subexpNames {
+			if name != "" {
 				fmt.Printf("%v,",
-					match[name])
+					subexpNames)
 			}
 		}
 		fmt.Print("\n")
 		i += i
 	}
-}*/
+}
 
 // test funtcion to print paths to console.
 // TODO: call with flag
-/* func printpaths(paths []string) {
+func printpaths(paths []string) {
 	for i := range paths {
-		fmt.Printf(paths[i])
+		fmt.Printf("%s",
+			paths[i])
 		fmt.Printf("\n")
 	}
 }
 
-func recursivepathsearch(ipath string, matchpattern string) []string {
-	opath := []string{}
+// TODO: call with flag
+func recursivepathsearch(ipath string, matchpattern string) (opath []string) {
 	filepath.WalkDir(ipath,
 		func(s string, d fs.DirEntry, err error) error {
 			if err != nil {
@@ -95,6 +110,7 @@ func recursivepathsearch(ipath string, matchpattern string) []string {
 }
 
 // wildCardToRegexp converts a wildcard pattern to a regular expression pattern.
+// TODO: call with flag
 func wildCardToRegexp(pattern string) string {
 	components := strings.Split(pattern, "*")
 	if len(components) == 1 {
@@ -119,4 +135,4 @@ func wildCardToRegexp(pattern string) string {
 func match(pattern string, value string) bool {
 	result, _ := regexp.MatchString(wildCardToRegexp(pattern), value)
 	return result
-} */
+}
