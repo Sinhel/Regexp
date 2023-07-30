@@ -6,6 +6,10 @@
   
   Write proper readme
 
+  Test and write proper errors for non functioning input
+
+  Write flag for outputting all files that are read recursively. Can then be used as a sanity check before running program
+
 Check TODO: comments in .go files
 
 This is supposed to be a CLI program that can be used to run a regular expression on a single file, or recursively on several files. Wildcards can be used to limit which files are read.  
