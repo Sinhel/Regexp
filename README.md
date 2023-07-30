@@ -19,11 +19,12 @@ Output is printed as csv, with regex group names, and file name of parsed file p
 
 ## Currently implemented flags
 
-| Description                                         | flag | Defaults    |
-|-----------------------------------------------------|------|-------------|
-| Parsing single file or directory                    | i    | ./input.txt |
-| Limiting recursive parsing with wildcard            | w    | *           |
-| Choosing which file to read regular expression from | r    | ./regex.txt |
+|   | Description                                           | flag   | Defaults      |
+|---|-------------------------------------------------------|--------|---------------|
+|   | Parsing single file or directory                      | i      | ./input.txt   |
+|   | Limiting recursive parsing with wildcard              | w      | *             |
+|   | Choosing which file to read regular expression from   | r      | ./regex.txt   |
+|   | Appends filepath as last column in csv printing       | p      | false         |
 
 
 ## There are planned flags for: 
@@ -31,5 +32,4 @@ Output is printed as csv, with regex group names, and file name of parsed file p
 |----------------------------------------------------------------------------------------------------|------|----------|
 | Allowing printing of whole regular expressions, not just groups                                    |      |          |
 | Allow for unnamed capture groups. Will then print index number for capture groups at top of file   |      |          |
-| Printing path for file the printed line is read from                                               |      |          |
 | More to come?                                                                                      |      |          |
