@@ -16,6 +16,7 @@ func main() {
 	fReinput := flag.String("r", "./regex.txt", "Specify file regular expression is read from")
 	fTxtinput := flag.String("i", "./input.txt", "Specify input file here\n If file is specified, file is parsed\n If directory is specified, directory is parsed recursively")
 	fWildcard := flag.String("w", "*", "Limit what kind of files recursive parsing should go through")
+	fPrintpath := flag.Bool("p", false, "Print file path as seperate collumn in csv")
 	flag.Parse()
 
 	//Read regular expression into memory, and store SubexpNames into keys slice
@@ -23,7 +24,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	keys := printReSubexpNames(string(reinput))
+	keys := printReSubexpNames(string(reinput), *fPrintpath)
 
 	for _, v := range recursivepathsearch(*fTxtinput, *fWildcard) {
 		txtinput, err := os.ReadFile(v)
@@ -31,7 +32,7 @@ func main() {
 			log.Fatal(err)
 		}
 		totres := runRegexAllStringSubmatch((string(txtinput)), string(reinput))
-		printReSubexContents(totres, keys, v)
+		printReSubexContents(totres, keys, v, *fPrintpath)
 	}
 }
 
@@ -50,7 +51,7 @@ func runRegexAllStringSubmatch(txtinput string, reinput string) (totres []map[st
 }
 
 // print SubexNames, typically at top of file to get collums for csv
-func printReSubexpNames(reinput string) (keys []string) {
+func printReSubexpNames(reinput string, fPrintpath bool) (keys []string) {
 	re := regexp.MustCompile(string(reinput))
 	keys = re.SubexpNames()
 	for _, k := range keys {
@@ -58,19 +59,25 @@ func printReSubexpNames(reinput string) (keys []string) {
 			fmt.Printf("%s,", k)
 		}
 	}
-	fmt.Printf("file\n")
+	if fPrintpath {
+		fmt.Printf("filepath")
+	}
+	fmt.Printf("\n")
 	return
 }
 
 // print contents of Subexpressions, typically done after printing SubexNames
-func printReSubexContents(totres []map[string]string, keys []string, path string) {
+func printReSubexContents(totres []map[string]string, keys []string, path string, fPrintpath bool) {
 	for _, m := range totres {
 		for _, v := range keys {
 			if v != "" {
 				fmt.Printf("%s,", m[v])
 			}
 		}
-		fmt.Printf("%s\n", path)
+		if fPrintpath {
+			fmt.Printf("%s", path)
+		}
+		fmt.Printf("\n")
 	}
 }
 
