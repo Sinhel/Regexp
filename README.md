@@ -15,5 +15,7 @@ Output is printed as csv, with regex group names printed at first line for group
 
 There are planned flags for: 
 * Setting if the program should be recursive or single file  
+* Allowing printing of whole regular expressions, not just groups
+* Allow for unnamed capture groups, while still printing result in csv format to terminal
 * Printing path for file the printed line is read from  
-* More to come
+* More to come  
