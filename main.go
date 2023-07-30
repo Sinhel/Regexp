@@ -15,6 +15,7 @@ func main() {
 	//Initiate flags for program, so that input can be selected at runtime
 	fReinput := flag.String("r", "./regex.txt", "Specify file regular expression is read from")
 	fTxtinput := flag.String("i", "./input.txt", "Specify input file here\n If file is specified, file is parsed\n If directory is specified, directory is parsed recursively")
+	//  FOR DEBUG fTxtinput := flag.String("i", "./test", "Specify input file here\n If file is specified, file is parsed\n If directory is specified, directory is parsed recursively")
 	fWildcard := flag.String("w", "*", "Limit what kind of files recursive parsing should go through")
 	fPrintpath := flag.Bool("p", false, "Print file path as seperate column in csv")
 	flag.Parse()
@@ -27,6 +28,7 @@ func main() {
 	keys := printReSubexpNames(string(reinput), *fPrintpath)
 
 	for _, v := range recursivepathsearch(*fTxtinput, *fWildcard) {
+		//Handle so os.readfile does not try to read directories. Will throw error and exit program
 		txtinput, err := os.ReadFile(v)
 		if err != nil {
 			log.Fatal(err)

@@ -10,6 +10,11 @@
 
   Write flag for outputting all files that are read recursively. Can then be used as a sanity check before running program
 
+  Concurrently search through files
+
+  Handle so os.readfile does not try to read directories. Will throw error and exit program, see line 31.
+
+
 Check TODO: comments in .go files
 
 This is supposed to be a CLI program that can be used to run a regular expression on a single file, or recursively on several files. Wildcards can be used to limit which files are read.  
