@@ -20,23 +20,21 @@ func main() {
 		reinputarg = os.Args[2]
 	}
 
-	//Read files into memory
+	//Read regular expression into memory
 	reinput, err := os.ReadFile(reinputarg)
 	if err != nil {
 		log.Fatal(err)
 	}
-	keys := printSubexpNames(string(reinput))
+	keys := printReSubexpNames(string(reinput))
 	for _, v := range recursivepathsearch(".", "*.txt") {
 		txtinput, err := os.ReadFile(v)
 		if err != nil {
 			log.Fatal(err)
 		}
 		totres := runRegexAllStringSubmatch((string(txtinput)), string(reinput))
-		printSubexContents(totres, keys)
+		printReSubexContents(totres, keys)
 		time.Sleep(1 * time.Microsecond)
 	}
-	/* 	runRegexAllStringSubmatch(string(txtinput), string(reinput)) */
-
 }
 
 func runRegexAllStringSubmatch(txtinput string, reinput string) (totres []map[string]string) {
@@ -54,7 +52,7 @@ func runRegexAllStringSubmatch(txtinput string, reinput string) (totres []map[st
 }
 
 // print SubexNames, typically at top of file to get collums for csv
-func printSubexpNames(reinput string) (keys []string) {
+func printReSubexpNames(reinput string) (keys []string) {
 	re := regexp.MustCompile(string(reinput))
 	keys = re.SubexpNames()
 	for _, k := range keys {
@@ -66,7 +64,7 @@ func printSubexpNames(reinput string) (keys []string) {
 }
 
 // print contents of Subexpressions, typically done after printing SubexNames
-func printSubexContents(totres []map[string]string, keys []string) {
+func printReSubexContents(totres []map[string]string, keys []string) {
 	fmt.Printf("\n")
 	for _, m := range totres {
 		for _, v := range keys {
@@ -106,9 +104,9 @@ func recursivepathsearch(ipath string, matchpattern string) (opath []string) {
 	return opath
 }
 
-// wildCardToRegexp converts a wildcard pattern to a regular expression pattern.
+// wildcardToRegexp converts a wildcard pattern to a regular expression pattern.
 // TODO: call with flag
-func wildCardToRegexp(pattern string) string {
+func wildcardToRegexp(pattern string) string {
 	components := strings.Split(pattern, "*")
 	if len(components) == 1 {
 		// if len is 1, there are no *'s, return exact match pattern
@@ -130,6 +128,6 @@ func wildCardToRegexp(pattern string) string {
 }
 
 func match(pattern string, value string) bool {
-	result, _ := regexp.MatchString(wildCardToRegexp(pattern), value)
+	result, _ := regexp.MatchString(wildcardToRegexp(pattern), value)
 	return result
 }
