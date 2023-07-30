@@ -8,13 +8,12 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
-	"time"
 )
 
 func main() {
 	//Set default value for input files as input.txt, regex.txt in same the folder as the program. Files can also be specified as arguments in cli
 	/* 	txtinputarg := "./input.txt" */
-	reinputarg := "./regex.txt"
+	reinputarg := "./test/regex.txt"
 	if len(os.Args) >= 2 {
 		/* 		txtinputarg = os.Args[1] */
 		reinputarg = os.Args[2]
@@ -27,14 +26,13 @@ func main() {
 	}
 	keys := printReSubexpNames(string(reinput))
 
-	for _, v := range recursivepathsearch(".", "*.txt") {
+	for _, v := range recursivepathsearch(".", "*.io") {
 		txtinput, err := os.ReadFile(v)
 		if err != nil {
 			log.Fatal(err)
 		}
 		totres := runRegexAllStringSubmatch((string(txtinput)), string(reinput))
-		printReSubexContents(totres, keys)
-		time.Sleep(1 * time.Microsecond)
+		printReSubexContents(totres, keys, v)
 	}
 }
 
@@ -61,19 +59,19 @@ func printReSubexpNames(reinput string) (keys []string) {
 			fmt.Printf("%s,", k)
 		}
 	}
+	fmt.Printf("file\n")
 	return
 }
 
 // print contents of Subexpressions, typically done after printing SubexNames
-func printReSubexContents(totres []map[string]string, keys []string) {
-	fmt.Printf("\n")
+func printReSubexContents(totres []map[string]string, keys []string, path string) {
 	for _, m := range totres {
 		for _, v := range keys {
 			if v != "" {
 				fmt.Printf("%s,", m[v])
 			}
 		}
-		fmt.Printf("\n")
+		fmt.Printf("%s\n", path)
 	}
 }
 
@@ -88,7 +86,7 @@ func printpaths(paths []string) {
 }
 
 // TODO: call with flag
-func recursivepathsearch(ipath string, matchpattern string) (opath []string) {
+func recursivepathsearch(ipath string, matchpattern string) (paths []string) {
 	filepath.WalkDir(ipath,
 		func(s string, d fs.DirEntry, err error) error {
 			if err != nil {
@@ -98,11 +96,11 @@ func recursivepathsearch(ipath string, matchpattern string) (opath []string) {
 				return err
 			}
 			if match(matchpattern, s) {
-				opath = append(opath, s)
+				paths = append(paths, s)
 			}
 			return nil
 		})
-	return opath
+	return paths
 }
 
 // wildcardToRegexp converts a wildcard pattern to a regular expression pattern.
