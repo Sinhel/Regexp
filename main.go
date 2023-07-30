@@ -16,7 +16,7 @@ func main() {
 	fReinput := flag.String("r", "./regex.txt", "Specify file regular expression is read from")
 	fTxtinput := flag.String("i", "./input.txt", "Specify input file here\n If file is specified, file is parsed\n If directory is specified, directory is parsed recursively")
 	fWildcard := flag.String("w", "*", "Limit what kind of files recursive parsing should go through")
-	fPrintpath := flag.Bool("p", false, "Print file path as seperate collumn in csv")
+	fPrintpath := flag.Bool("p", false, "Print file path as seperate column in csv")
 	flag.Parse()
 
 	//Read regular expression into memory, and store SubexpNames into keys slice
