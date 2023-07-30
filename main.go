@@ -20,12 +20,13 @@ func main() {
 		reinputarg = os.Args[2]
 	}
 
-	//Read regular expression into memory
+	//Read regular expression into memory, and store SubexpNames into keys slice
 	reinput, err := os.ReadFile(reinputarg)
 	if err != nil {
 		log.Fatal(err)
 	}
 	keys := printReSubexpNames(string(reinput))
+
 	for _, v := range recursivepathsearch(".", "*.txt") {
 		txtinput, err := os.ReadFile(v)
 		if err != nil {
