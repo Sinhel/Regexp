@@ -8,14 +8,15 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 )
 
 func main() {
 	//Set default value for input files as input.txt, regex.txt in same the folder as the program. Files can also be specified as arguments in cli
-	txtinputarg := "./input.txt"
+	/* 	txtinputarg := "./input.txt" */
 	reinputarg := "./regex.txt"
 	if len(os.Args) >= 2 {
-		txtinputarg = os.Args[1]
+		/* 		txtinputarg = os.Args[1] */
 		reinputarg = os.Args[2]
 	}
 
@@ -24,60 +25,56 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	txtinput, err := os.ReadFile(txtinputarg)
-	if err != nil {
-		log.Fatal(err)
+	keys := printSubexpNames(string(reinput))
+	for _, v := range recursivepathsearch(".", "*.txt") {
+		txtinput, err := os.ReadFile(v)
+		if err != nil {
+			log.Fatal(err)
+		}
+		totres := runRegexAllStringSubmatch((string(txtinput)), string(reinput))
+		printSubexContents(totres, keys)
+		time.Sleep(1 * time.Microsecond)
 	}
-	runRegex(string(txtinput), string(reinput))
-	recursivepathsearch(".", "*")
+	/* 	runRegexAllStringSubmatch(string(txtinput), string(reinput)) */
+
 }
 
-func runRegex(txtinput string, reinput string) (totres []map[string]string) {
+func runRegexAllStringSubmatch(txtinput string, reinput string) (totres []map[string]string) {
 	re := regexp.MustCompile(reinput)
 	for _, match := range re.FindAllStringSubmatch(txtinput, -1) {
-		res := map[string]string{}
-		totres = append(totres, res)
+		matchres := map[string]string{}
+		totres = append(totres, matchres)
 		for i, subexpName := range re.SubexpNames() {
 			if subexpName != "" {
-				res[subexpName] = match[i]
+				matchres[subexpName] = match[i]
 			}
 		}
 	}
-	keys := re.SubexpNames()
+	return
+}
+
+// print SubexNames, typically at top of file to get collums for csv
+func printSubexpNames(reinput string) (keys []string) {
+	re := regexp.MustCompile(string(reinput))
+	keys = re.SubexpNames()
 	for _, k := range keys {
 		if k != "" {
 			fmt.Printf("%s,", k)
 		}
 	}
-	fmt.Printf("\n")
-	for _, m := range totres {
-		for _, k := range keys {
-			if k != "" {
-				fmt.Printf("%s,", m[k])
-			}
-		}
-		fmt.Printf("\n")
-	}
 	return
 }
 
-func printSubexpNames(subexpNames []string) {
-	for i, name := range subexpNames {
-		if i != 0 && name != "" {
-			fmt.Printf("%v,",
-				name)
-		}
-	}
-	fmt.Print("\n")
-	for i := range subexpNames {
-		for _, name := range subexpNames {
-			if name != "" {
-				fmt.Printf("%v,",
-					subexpNames)
+// print contents of Subexpressions, typically done after printing SubexNames
+func printSubexContents(totres []map[string]string, keys []string) {
+	fmt.Printf("\n")
+	for _, m := range totres {
+		for _, v := range keys {
+			if v != "" {
+				fmt.Printf("%s,", m[v])
 			}
 		}
-		fmt.Print("\n")
-		i += i
+		fmt.Printf("\n")
 	}
 }
 
