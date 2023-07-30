@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/fs"
 	"log"
@@ -11,22 +12,20 @@ import (
 )
 
 func main() {
-	//Set default value for input files as input.txt, regex.txt in same the folder as the program. Files can also be specified as arguments in cli
-	/* 	txtinputarg := "./input.txt" */
-	reinputarg := "./test/regex.txt"
-	if len(os.Args) >= 2 {
-		/* 		txtinputarg = os.Args[1] */
-		reinputarg = os.Args[2]
-	}
+	//Initiate flags for program, so that input can be selected at runtime
+	fReinput := flag.String("r", "./regex.txt", "Specify file regular expression is read from")
+	fTxtinput := flag.String("i", "./input.txt", "Specify input file here\n If file is specified, file is parsed\n If directory is specified, directory is parsed recursively")
+	fWildcard := flag.String("w", "*", "Limit what kind of files recursive parsing should go through")
+	flag.Parse()
 
 	//Read regular expression into memory, and store SubexpNames into keys slice
-	reinput, err := os.ReadFile(reinputarg)
+	reinput, err := os.ReadFile(*fReinput)
 	if err != nil {
 		log.Fatal(err)
 	}
 	keys := printReSubexpNames(string(reinput))
 
-	for _, v := range recursivepathsearch(".", "*.io") {
+	for _, v := range recursivepathsearch(*fTxtinput, *fWildcard) {
 		txtinput, err := os.ReadFile(v)
 		if err != nil {
 			log.Fatal(err)
