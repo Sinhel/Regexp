@@ -1,26 +1,28 @@
 ## TODO:
   
-  Write tests
+ * Write tests
   
-  Complete flags
-  
-  Write proper readme
+ * Flags as described at bottom of readme
 
-  Test and write proper errors for non functioning input
+ * Write proper readme
 
-  Write flag for outputting all files that are read recursively. Can then be used as a sanity check before running program
+ * Test and write proper errors for non functioning regex/input
 
-  Concurrently search through files
-
-  Handle so os.readfile does not try to read directories. Will throw error and exit program, see line 31.
-
+ * Concurrently search through files
 
 Check TODO: comments in .go files
+## Readme:
 
-This is supposed to be a CLI program that can be used to run a regular expression on a single file, or recursively on several files. Wildcards can be used to limit which files are read.  
-Regular expression is read from file or directory. If read from directory, it will parse recursively.  
-Output is then printed to terminal window. This output can of course be piped further to the likes of grep or stdout.  
-Output is printed as csv, with regex group names, and file name of parsed file printed at first line for grouping into collums.  
+  This is supposed to be a CLI program that can be used to run a regular expression on a single file, or recursively on several files. 
+      
+  Wildcards can be used to limit which files are read.  
+  
+  Regular expression is read from file or directory. If read from directory, it will parse recursively.  
+  
+  Output is then printed to terminal window. This output can of course be piped further to the likes of grep or stdout.  
+  
+  Output is printed as csv expect for when just printing filepaths. 
+  Regex group names and file names of parsed file can be printed out at first line as column headers.
 
 ## Currently implemented flags
 

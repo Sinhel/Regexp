@@ -15,7 +15,6 @@ func main() {
 	//Initiate flags for program, so that input can be selected at runtime
 	fReinput := flag.String("r", "./regex.txt", "Specify file regular expression is read from")
 	fTxtinput := flag.String("i", "./input.txt", "Specify input file here\n If file is specified, file is parsed\n If directory is specified, directory is parsed recursively")
-	//  FOR DEBUG fTxtinput := flag.String("i", "./test", "Specify input file here\n If file is specified, file is parsed\n If directory is specified, directory is parsed recursively")
 	fWildcard := flag.String("w", "*", "Limit what kind of files recursive parsing should go through")
 	fPrintpath := flag.Bool("p", false, "Print file path as seperate column in csv")
 	flag.Parse()
@@ -28,13 +27,14 @@ func main() {
 	keys := printReSubexpNames(string(reinput), *fPrintpath)
 
 	for _, v := range recursivepathsearch(*fTxtinput, *fWildcard) {
-		//Handle so os.readfile does not try to read directories. Will throw error and exit program
-		txtinput, err := os.ReadFile(v)
-		if err != nil {
-			log.Fatal(err)
+		if !isDir(v) {
+			txtinput, err := os.ReadFile(v)
+			if err != nil {
+				log.Fatal(err)
+			}
+			totres := runRegexAllStringSubmatch((string(txtinput)), string(reinput))
+			printReSubexContents(totres, keys, v, *fPrintpath)
 		}
-		totres := runRegexAllStringSubmatch((string(txtinput)), string(reinput))
-		printReSubexContents(totres, keys, v, *fPrintpath)
 	}
 }
 
@@ -95,19 +95,18 @@ func printpaths(paths []string) {
 
 // TODO: call with flag
 func recursivepathsearch(ipath string, matchpattern string) (paths []string) {
-	filepath.WalkDir(ipath,
-		func(s string, d fs.DirEntry, err error) error {
-			if err != nil {
-				fmt.Printf("prevent panic by handling failure accessing a path %v: %v\n",
-					s,
-					err)
-				return err
-			}
-			if match(matchpattern, s) {
-				paths = append(paths, s)
-			}
-			return nil
-		})
+	filepath.WalkDir(ipath, func(s string, d fs.DirEntry, err error) error {
+		if err != nil {
+			fmt.Printf("prevent panic by handling failure accessing a path %v: %v\n",
+				s,
+				err)
+			return err
+		}
+		if match(matchpattern, s) {
+			paths = append(paths, s)
+		}
+		return nil
+	})
 	return paths
 }
 
@@ -137,4 +136,14 @@ func wildcardToRegexp(pattern string) string {
 func match(pattern string, value string) bool {
 	result, _ := regexp.MatchString(wildcardToRegexp(pattern), value)
 	return result
+}
+
+// check if path is dir or file
+func isDir(path string) (isDir bool) {
+	fileinfo, err := os.Stat(path)
+	if os.IsNotExist(err) {
+		log.Fatal(err)
+	}
+	isDir = fileinfo.IsDir()
+	return
 }
