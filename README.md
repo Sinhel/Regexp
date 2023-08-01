@@ -40,4 +40,4 @@ Check TODO: comments in .go files
 | Allowing printing of whole regular expressions, not just groups                                    |      |          |
 | Allow for unnamed capture groups. Will then print index number for capture groups at top of file   |      |          |
 | Function to print all paths to run regular expression on. For sanity checking purposes             |      |          |
-| More to come?                                                                                      |      |          |
+| Select which character to use as seperator                                                         |      |      ,   |
