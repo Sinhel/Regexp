@@ -19,25 +19,24 @@ Check TODO: comments in .go files
   
   Regular expression is read from file or directory. If read from directory, it will parse recursively.  
   
-  Output is then printed to terminal window. This output can of course be piped further to the likes of grep or stdout.  
+  Output is then printed to terminal window. This output can be piped further to the likes of grep or stdout.  
   
-  Output is printed as csv expect for when just printing filepaths. 
+  Output is printed as csv expect for when just printing filepaths.  
+  Named capture groups are supported, and they are not used they will be numbered from 1 to n.  
   Regex group names and file names of parsed file can be printed out at first line as column headers.
 
 ## Currently implemented flags
 
 |   | Description                                           | flag   | Defaults      |
 |---|-------------------------------------------------------|--------|---------------|
-|   | Parsing single file or directory                      | i      | ./input.txt   |
-|   | Limiting recursive parsing with wildcard              | w      | *             |
-|   | Choosing which file to read regular expression from   | r      | ./regex.txt   |
-|   | Appends filepath as last column in csv printing       | p      | false         |
-
+|   | Parse single file or directory                        | i      | ./input.txt   |
+|   | Choose which file to read regular expression from     | r      | ./regex.txt   |
+|   | Limit recursive parsing with wildcard                 | w      | *             |
+|   | Print paths that are read from input flag             | p      | false         |
+|   | Appends filepath as last column in csv printing       | a      | false         |
+|   | Select which character to use as seperator            | s      | ,             |
 
 ## There are planned flags for: 
-| Description                                                                                        | flag | Defaults |
-|----------------------------------------------------------------------------------------------------|------|----------|
-| Allowing printing of whole regular expressions, not just groups                                    |      |          |
-| Allow for unnamed capture groups. Will then print index number for capture groups at top of file   |      |          |
-| Function to print all paths to run regular expression on. For sanity checking purposes             |      |          |
-| Select which character to use as seperator                                                         |      |      ,   |
+|   | Description                                                                            | flag | Defaults |
+|---|----------------------------------------------------------------------------------------|------|----------|
+|   | Allowing printing of whole regular expressions, not just groups                        |      |          |
