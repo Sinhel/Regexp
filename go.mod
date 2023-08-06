@@ -1,1 +1,1 @@
-module mymodule
+module regexp-cli
