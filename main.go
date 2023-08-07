@@ -18,7 +18,7 @@ func main() {
 	fTxtinput := flag.String("i", "./input.txt", "Specify input file here\n If file is specified, file is parsed\n If directory is specified, directory is parsed recursively")
 	fWildcard := flag.String("w", "*", "Limit what kind of files recursive parsing should go through")
 	fPrintpath := flag.Bool("p", false, "Print paths that are read from input flag")
-	fAppendpath := flag.Bool("a", false, "Print file path as seperate column in csv")
+	fAppendpath := flag.Bool("a", false, "Append file path as seperate column in csv")
 	fOmitmatch := flag.Bool("o", false, "Omit regular expression full match from out put, so only capture groups will be printed")
 	fSeperatorchar := flag.String("s", ",", "Specify which character to use as seperator between matches")
 	flag.Parse()
