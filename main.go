@@ -14,13 +14,13 @@ import (
 
 func main() {
 	//Initiate flags for program, so that input can be selected at runtime
-	fReinput := flag.String("r", "./regex.txt", "Specify file regular expression is read from")
-	fTxtinput := flag.String("i", "./input.txt", "Specify input file here\n If file is specified, file is parsed\n If directory is specified, directory is parsed recursively")
-	fWildcard := flag.String("w", "*", "Limit what kind of files recursive parsing should go through")
-	fPrintpath := flag.Bool("p", false, "Print paths that are read from input flag")
 	fAppendpath := flag.Bool("a", false, "Append file path as seperate column in csv")
-	fOmitmatch := flag.Bool("o", false, "Omit regular expression full match from out put, so only capture groups will be printed")
+	fTxtinput := flag.String("i", "./input.txt", "Specify input file here\n If file is specified, file is parsed\n If directory is specified, directory is parsed recursively")
+	fOmitmatch := flag.Bool("o", false, "Omit regular expression's full match from output, so only capture groups will be printed")
+	fPrintpath := flag.Bool("p", false, "Print paths that are read from input flag")
+	fReinput := flag.String("r", "./regex.txt", "Specify file regular expression is read from")
 	fSeperatorchar := flag.String("s", ",", "Specify which character to use as seperator between matches")
+	fWildcard := flag.String("w", "*", "Limit what kind of files recursive parsing should go through")
 	flag.Parse()
 
 	if *fPrintpath {
