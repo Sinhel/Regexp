@@ -23,7 +23,7 @@ Check TODO: comments in .go files
   
   Output with capture groups is printed with a seperator character that can be specified. Uniqe matches are printed on new line. If printing paths with -p all paths will be seperated with new line.  
 
-  Named capture groups are supported. If they are not used they will be numbered from 0 to n, where 0 complete match of regular expression.   
+  Named capture groups are supported. If they are not used they will be numbered from 0 to n, where 0 is the complete match of regular expression.   
   
   Regex group names and file names of parsed file can be printed out at first line as column headers.
 
