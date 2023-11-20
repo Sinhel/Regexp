@@ -8,6 +8,8 @@
 
  * Concurrently search through files
 
+ * Include most of grep's functionality
+
 Check TODO: comments in .go files
 ## Readme:
 
