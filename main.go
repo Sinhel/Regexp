@@ -12,36 +12,47 @@ import (
 	"strings"
 )
 
+type flags struct {
+	appendpath    *bool
+	txtinput      *string
+	omitmatch     *bool
+	printpath     *bool
+	reinput       *string
+	seperatorchar *string
+	wildcard      *string
+}
+
 func main() {
-	//Initiate flags for program, so that input can be selected at runtime
-	fAppendpath := flag.Bool("a", false, "Append file path as seperate column in csv")
-	fTxtinput := flag.String("i", "./input.txt", "Specify input file here\n If file is specified, file is parsed\n If directory is specified, directory is parsed recursively")
-	fOmitmatch := flag.Bool("o", false, "Omit regular expression's full match from output, so only capture groups will be printed")
-	fPrintpath := flag.Bool("p", false, "Print paths that are read from input flag")
-	fReinput := flag.String("r", "./regex.txt", "Specify file regular expression is read from")
-	fSeperatorchar := flag.String("s", ",", "Specify which character to use as seperator between matches")
-	fWildcard := flag.String("w", "*", "Limit what kind of files recursive parsing should go through")
+	args := flags{
+		appendpath:    flag.Bool("a", false, "Append file path as seperate column in csv"),
+		txtinput:      flag.String("i", "./input.txt", "Specify input file here\n If file is specified, file is parsed\n If directory is specified, directory is parsed recursively"),
+		omitmatch:     flag.Bool("o", false, "Omit regular expression's full match from output, so only capture groups will be printed"),
+		printpath:     flag.Bool("p", false, "Print paths that are read from input flag"),
+		reinput:       flag.String("r", "./regex.txt", "Specify file regular expression is read from"),
+		seperatorchar: flag.String("s", ",", "Specify which character to use as seperator between matches"),
+		wildcard:      flag.String("w", "*", "Limit what kind of files recursive parsing should go through"),
+	}
 	flag.Parse()
 
-	if *fPrintpath {
-		printpaths(recursivepathsearch(*fTxtinput, *fWildcard))
+	if *args.printpath {
+		printpaths(recursivepathsearch(args))
 	} else {
 
 		//Read regular expression into memory, and store SubexpNames into keys slice
-		reinput, err := os.ReadFile(*fReinput)
+		reinput, err := os.ReadFile(*args.reinput)
 		if err != nil {
 			log.Fatal(err)
 		}
-		keys := printReSubexpNames(string(reinput), *fAppendpath, *fSeperatorchar, *fOmitmatch)
+		keys := printReSubexpNames(string(reinput), args)
 
-		for _, v := range recursivepathsearch(*fTxtinput, *fWildcard) {
+		for _, v := range recursivepathsearch(args) {
 			if !isDir(v) {
 				txtinput, err := os.ReadFile(v)
 				if err != nil {
 					log.Fatal(err)
 				}
 				totres := runRegexAllStringSubmatch((string(txtinput)), string(reinput), keys)
-				printReSubexContents(totres, keys, v, *fOmitmatch, *fSeperatorchar, *fAppendpath)
+				printReSubexContents(totres, keys, v, args)
 			}
 		}
 	}
@@ -60,23 +71,23 @@ func runRegexAllStringSubmatch(txtinput string, reinput string, keys []string) (
 }
 
 // print SubexNames, typically at top of file to get collums for csv
-func printReSubexpNames(reinput string, fAppendpath bool, seperator string, omit bool) (keys []string) {
+func printReSubexpNames(reinput string, args flags) (keys []string) {
 	re := regexp.MustCompile(string(reinput))
 	names := re.SubexpNames()
 	for i, k := range names {
-		if omit && i == 0 {
+		if *args.omitmatch && i == 0 {
 			keys = append(keys, strconv.Itoa(i))
 		} else {
 			if k != "" {
-				fmt.Printf("%s%s", k, seperator)
+				fmt.Printf("%s%s", k, *args.seperatorchar)
 				keys = append(keys, k)
 			} else {
-				fmt.Printf("%v%s", i, seperator)
+				fmt.Printf("%v%s", i, *args.seperatorchar)
 				keys = append(keys, strconv.Itoa(i))
 			}
 		}
 	}
-	if fAppendpath {
+	if *args.appendpath {
 		fmt.Printf("filepath")
 	}
 	fmt.Printf("\n")
@@ -84,24 +95,22 @@ func printReSubexpNames(reinput string, fAppendpath bool, seperator string, omit
 }
 
 // print contents of Subexpressions, typically done after printing SubexNames
-func printReSubexContents(totres []map[string]string, keys []string, path string, omit bool, seperator string, fAppendpath bool) {
+func printReSubexContents(totres []map[string]string, keys []string, path string, args flags) {
 	for _, m := range totres {
 		for _, v := range keys {
-			if omit && v == "0" {
+			if *args.omitmatch && v == "0" {
 				// do nothing
 			} else {
-				fmt.Printf("%s%s", m[v], seperator)
+				fmt.Printf("%s%s", m[v], *args.seperatorchar)
 			}
 		}
-		if fAppendpath {
+		if *args.appendpath {
 			fmt.Printf("%s", path)
 		}
 		fmt.Printf("\n")
 	}
 }
 
-// test funtcion to print paths to console.
-// TODO: call with flag
 func printpaths(paths []string) {
 	for i := range paths {
 		fmt.Printf("%s",
@@ -110,15 +119,15 @@ func printpaths(paths []string) {
 	}
 }
 
-func recursivepathsearch(ipath string, matchpattern string) (paths []string) {
-	filepath.WalkDir(ipath, func(s string, d fs.DirEntry, err error) error {
+func recursivepathsearch(args flags) (paths []string) {
+	filepath.WalkDir(*args.txtinput, func(s string, d fs.DirEntry, err error) error {
 		if err != nil {
 			fmt.Printf("prevent panic by handling failure accessing a path %v: %v\n",
 				s,
 				err)
 			return err
 		}
-		if match(matchpattern, s) {
+		if match(*args.wildcard, s) {
 			paths = append(paths, s)
 		}
 		return nil
