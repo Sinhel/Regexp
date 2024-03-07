@@ -127,7 +127,7 @@ func recursivepathsearch(args flags) (paths []string) {
 				err)
 			return err
 		}
-		if match(*args.wildcard, s) {
+		if match(args, s) {
 			paths = append(paths, s)
 		}
 		return nil
@@ -157,8 +157,8 @@ func wildcardToRegexp(pattern string) string {
 	return "^" + result.String() + "$"
 }
 
-func match(pattern string, value string) bool {
-	result, _ := regexp.MatchString(wildcardToRegexp(pattern), value)
+func match(args flags, value string) bool {
+	result, _ := regexp.MatchString(wildcardToRegexp(*args.wildcard), value)
 	return result
 }
 
