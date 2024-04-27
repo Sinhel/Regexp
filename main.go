@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"io/fs"
@@ -10,6 +11,9 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"unicode/utf8"
+
+	"golang.org/x/text/encoding/charmap"
 )
 
 type flags struct {
@@ -20,40 +24,71 @@ type flags struct {
 	reinput       *string
 	seperatorchar *string
 	wildcard      *string
+	charmap       *string
+	listmaps      *bool
+	decode        *bool
 }
 
 func main() {
 	args := flags{
 		appendpath:    flag.Bool("a", false, "Append file path as seperate column in csv"),
-		txtinput:      flag.String("i", "./input.txt", "Specify input file here\n If file is specified, file is parsed\n If directory is specified, directory is parsed recursively"),
+		txtinput:      flag.String("i", "./input.txt", "Specify input file here\n If file is specified, file is parsed\n If directory is specified, directory is parsed recursively\n"),
 		omitmatch:     flag.Bool("o", false, "Omit regular expression's full match from output, so only capture groups will be printed"),
 		printpath:     flag.Bool("p", false, "Print paths that are read from input flag"),
-		reinput:       flag.String("r", "./regex.txt", "Specify file regular expression is read from"),
-		seperatorchar: flag.String("s", ",", "Specify which character to use as seperator between matches"),
-		wildcard:      flag.String("w", "*", "Limit what kind of files recursive parsing should go through"),
+		reinput:       flag.String("r", "./regex.txt", "Specify file regular expression is read from\n"),
+		seperatorchar: flag.String("s", ",", "Specify which character to use as seperator between matches\n"),
+		wildcard:      flag.String("w", "*", "Limit what kind of files recursive parsing should go through\n"),
+		charmap:       flag.String("c", "Windows 1252", "Charmap to decode from, if program detects non UTF-8 characters\n"),
+		listmaps:      flag.Bool("lc", false, "lists all available charmaps"),
+		decode:        flag.Bool("d", false, "decode string in format chosen by argument c"),
 	}
 	flag.Parse()
 
 	if *args.printpath {
 		printpaths(recursivepathsearch(args))
-	} else {
+		return
+	}
 
-		//Read regular expression into memory, and store SubexpNames into keys slice
-		reinput, err := os.ReadFile(*args.reinput)
-		if err != nil {
-			log.Fatal(err)
-		}
-		keys := printReSubexpNames(string(reinput), args)
+	if *args.listmaps {
+		listcharmaps()
+		return
+	}
 
-		for _, v := range recursivepathsearch(args) {
-			if !isDir(v) {
-				txtinput, err := os.ReadFile(v)
-				if err != nil {
-					log.Fatal(err)
-				}
-				totres := runRegexAllStringSubmatch((string(txtinput)), string(reinput), keys)
-				printReSubexContents(totres, keys, v, args)
+	//Read regular expression into memory, and store SubexpNames into keys slice
+	reinput, err := os.ReadFile(*args.reinput)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if *args.decode {
+		reinput = decodestring(reinput, args)
+	}
+
+	validcheck := utf8.ValidString(string(reinput))
+	if !validcheck {
+		log.Fatal("regex not UTF-8 compliant, decode with -d")
+	}
+
+	keys := printReSubexpNames(string(reinput), args)
+
+	for _, v := range recursivepathsearch(args) {
+		if !isDir(v) {
+			txtinput, err := os.ReadFile(v)
+			if err != nil {
+				log.Fatal(err)
 			}
+
+			if *args.decode {
+				txtinput = decodestring(txtinput, args)
+			}
+
+			validcheck := utf8.ValidString(string(txtinput))
+			if !validcheck {
+				log.Fatal("Input not UTF-8 compliant, decode with -d")
+			}
+
+			totres := runRegexAllStringSubmatch(string(txtinput), string(reinput), keys)
+			printReSubexContents(totres, keys, v, args)
 		}
 	}
 }
@@ -70,7 +105,7 @@ func runRegexAllStringSubmatch(txtinput string, reinput string, keys []string) (
 	return
 }
 
-// print SubexNames, typically at top of file to get collums for csv
+// print SubexNames, typically at top of file to get columns for csv
 func printReSubexpNames(reinput string, args flags) (keys []string) {
 	re := regexp.MustCompile(string(reinput))
 	names := re.SubexpNames()
@@ -170,4 +205,36 @@ func isDir(path string) (isDir bool) {
 	}
 	isDir = fileinfo.IsDir()
 	return
+}
+
+func listcharmaps() {
+	for _, enc := range charmap.All {
+		cmap, ok := enc.(*charmap.Charmap)
+		if ok {
+			fmt.Printf("%s\n", cmap.String())
+		}
+	}
+}
+
+func decodestring(s []byte, args flags) (decoded []byte) {
+	mapping, err := mappingcheck(*args.charmap)
+	if err != nil {
+		log.Fatal(err)
+	}
+	decoded, err = mapping.NewDecoder().Bytes(s)
+	if err != nil {
+		log.Fatal(err)
+	}
+	//	fmt.Printf("%s", string(decoded))
+	return decoded
+}
+
+func mappingcheck(s string) (enc charmap.Charmap, err error) {
+	for _, enc := range charmap.All {
+		cmap, ok := enc.(*charmap.Charmap)
+		if ok && cmap.String() == s {
+			return *cmap, nil
+		}
+	}
+	return enc, errors.New("encoder not found in charmap list")
 }
