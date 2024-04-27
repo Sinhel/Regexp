@@ -4,3 +4,5 @@ Untitled*
 *.io
 *.csv
 *.json
+regexp-cli
+*.ps
