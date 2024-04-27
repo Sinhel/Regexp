@@ -38,9 +38,9 @@ func main() {
 		reinput:       flag.String("r", "./regex.txt", "Specify file regular expression is read from\n"),
 		seperatorchar: flag.String("s", ",", "Specify which character to use as seperator between matches\n"),
 		wildcard:      flag.String("w", "*", "Limit what kind of files recursive parsing should go through\n"),
-		charmap:       flag.String("c", "Windows 1252", "Charmap to decode from, if program detects non UTF-8 characters\n"),
-		listmaps:      flag.Bool("lc", false, "lists all available charmaps"),
-		decode:        flag.Bool("d", false, "decode string in format chosen by argument c"),
+		charmap:       flag.String("c", "Windows 1252", "Charmap to decode from\n"),
+		listmaps:      flag.Bool("lc", false, "Lists all available charmaps"),
+		decode:        flag.Bool("d", false, "Decode string in format chosen by argument c"),
 	}
 	flag.Parse()
 
