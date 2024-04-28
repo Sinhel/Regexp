@@ -29,20 +29,25 @@ Check TODO: comments in .go files
 
 ## Currently implemented flags
 
-|   | Description                                       | flag | Defaults     |
-|---|---------------------------------------------------|------|--------------|
-|   | Parse single file or directory                    | i    | ./input.txt  |
-|   | Choose which file to read regular expression from | r    | ./regex.txt  |
-|   | Limit recursive parsing with wildcard             | w    | *            |
-|   | Print paths that are read from input flag         | p    | false        |
-|   | Appends filepath as last column in csv printing   | a    | false        |
-|   | Omit full match from printed results              | o    | false        |
-|   | Select which character to use as seperator        | s    | ,            |
-|   | Charmap to decode from                            | c    | Windows 1252 |
-|   | Lists all available charmaps                      | lc   | false        |
-|   | Decode string in format chosen by argument c      | d    | false        |
+| Description                                       | flag | Defaults     |
+|---------------------------------------------------|------|--------------|
+| Parse single file or directory                    | i    | ./input.txt  |
+| Choose which file to read regular expression from | r    | ./regex.txt  |
+| Limit recursive parsing with wildcard             | w    | *            |
+| Print paths that are read from input flag         | p    | false        |
+| Appends filepath as last column in csv printing   | a    | false        |
+| Omit full match from printed results              | o    | false        |
+| Select which character to use as seperator        | s    | ,            |
+| Charmap to decode from                            | c    | Windows 1252 |
+| Lists all available charmaps                      | lc   | false        |
+| Decode string in format chosen by argument c      | d    | false        |
 
 ## There are planned flags for: 
-|   | Description| flag | Defaults |
-|---|------------|------|----------|
-|   |            |      |          |
+| Description                        | flag | Defaults |
+|------------------------------------|------|----------|
+|Printing line numbers next to match |      |          |
+|Printing full line containing match |      |          |
+
+
+
+
