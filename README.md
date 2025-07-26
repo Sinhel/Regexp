@@ -1,3 +1,12 @@
+What I've aimed to create here can be more or less duplicated with ripgrep as such:
+
+
+rg --with-filename --no-heading --multiline --only-matching --replace '$1, $2, $3' -f pattern *.ps
+
+
+If i'm to update this, there will most likely be a full rewrite at some point. 
+
+
 ## TODO:
   
  * Write tests
